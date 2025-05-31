@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 
+/**
+ * interactive React component.
+ * 
+ * @returns tree of visual elements that React renders on the screen.
+ */
 const MemorySimulator = () => {
   const [memory, setMemory] = useState([{ id: null, size: 1024 }]); // 1024 KB en total
   const [strategy, setStrategy] = useState('best');
   const [processSize, setProcessSize] = useState('');
   const [processId, setProcessId] = useState('');    
 
+  /**
+   * react functional component
+   * 
+   * This component is called every time the user clicks the "Assign" button.     
+   */
   const allocateMemory = () => {
 
     const newBlockSize = parseInt(processSize);
@@ -17,7 +27,13 @@ const MemorySimulator = () => {
 
     let chosenIndex = -1;        
 
-    // best fit strategy
+    /**
+     * implementation of the memory allocation strategy "Best fit"
+     * 
+     * we look for the null id, means "vacant block"
+     * We look for the smallest block that best fits the requested size
+     * 
+     */
     if(strategy === 'best'){      
       let bestSize = Infinity;
       
@@ -30,7 +46,14 @@ const MemorySimulator = () => {
         
       }
 
-    } else if(strategy === 'first'){ // first fit strategy
+    } 
+    /**
+     * implementation of the memory allocation strategy "First fit"
+     * 
+     * we look for the null id, means "vacant block"
+     * We look for the first largest block to take its index
+     */
+    else if(strategy === 'first'){ // first fit strategy
 
       for(let i=0; i<memory.length; i++){
 
@@ -42,6 +65,16 @@ const MemorySimulator = () => {
       }
     }
 
+    /**
+     * if it is different from -1.
+     * It means that it did find an available block according to the strategy.
+     * 
+     * We delete the block with the chosen index, 
+     * create a new one with the requested value, 
+     * create another new one with the value of block.size - newBlockSize
+     * 
+     * otherwise, we assign in that index
+     */
     if(chosenIndex !== -1){
       const blocks = [...memory];
       const block = blocks[chosenIndex];            
@@ -66,7 +99,14 @@ const MemorySimulator = () => {
 
   }
 
- const freeMemory = (id) => {
+  /**
+   * This arrow function is responsible for freeing a block using an ID.
+   * 
+   * It also merges free blocks that are in close proximity.
+   * 
+   * @param {*} id identifier of the process to be eliminated
+   */
+  const freeMemory = (id) => {
     const blocks = memory.map((block) => 
       (block.id === id ? { id: null, size: block.size } : block));
     
